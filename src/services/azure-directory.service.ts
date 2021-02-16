@@ -272,20 +272,18 @@ export class AzureDirectoryService extends BaseDirectoryService implements Direc
             return this.filterOutResult([userSetTypeExclude, setFilter[1]], user.email);
         }
 
-        try {
-            const memberGroups = await this.client.api(`/users/${user.externalId}/checkMemberGroups`).post({
-                groupIds: Array.from(setFilter[1]),
-            });
-            if (memberGroups.value.length > 0 && setFilter[0] === UserSetType.IncludeGroup) {
-                return false;
-            } else if (memberGroups.value.length > 0 && setFilter[0] === UserSetType.ExcludeGroup) {
-                return true;
-            } else if (memberGroups.value.length === 0 && setFilter[0] === UserSetType.IncludeGroup) {
-                return true;
-            } else if (memberGroups.value.length === 0 && setFilter[0] === UserSetType.ExcludeGroup) {
-                return false;
-            }
-        } catch { }
+        const memberGroups = await this.client.api(`/users/${user.externalId}/checkMemberGroups`).post({
+            groupIds: Array.from(setFilter[1]),
+        });
+        if (memberGroups.value.length > 0 && setFilter[0] === UserSetType.IncludeGroup) {
+            return false;
+        } else if (memberGroups.value.length > 0 && setFilter[0] === UserSetType.ExcludeGroup) {
+            return true;
+        } else if (memberGroups.value.length === 0 && setFilter[0] === UserSetType.IncludeGroup) {
+            return true;
+        } else if (memberGroups.value.length === 0 && setFilter[0] === UserSetType.ExcludeGroup) {
+            return false;
+        }
 
         return false;
     }
@@ -379,7 +377,7 @@ export class AzureDirectoryService extends BaseDirectoryService implements Direc
 
     private init() {
         this.client = graph.Client.init({
-            authProvider: (done) => {
+            authProvider: done => {
                 if (this.dirConfig.applicationId == null || this.dirConfig.key == null ||
                     this.dirConfig.tenant == null) {
                     done(this.i18nService.t('dirConfigIncomplete'), null);
@@ -409,7 +407,7 @@ export class AzureDirectoryService extends BaseDirectoryService implements Direc
                         'Content-Type': 'application/x-www-form-urlencoded',
                         'Content-Length': Buffer.byteLength(data),
                     },
-                }, (res) => {
+                }, res => {
                     res.setEncoding('utf8');
                     res.on('data', (chunk: string) => {
                         const d = JSON.parse(chunk);
@@ -422,7 +420,7 @@ export class AzureDirectoryService extends BaseDirectoryService implements Direc
                             done('Unknown error (' + res.statusCode + ').', null);
                         }
                     });
-                }).on('error', (err) => {
+                }).on('error', err => {
                     done(err, null);
                 });
 
