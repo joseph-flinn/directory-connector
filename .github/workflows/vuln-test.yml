@@ -6,7 +6,7 @@ on:
       - 'l10n_master'
 
 jobs:
-  cloc:
+  netcat:
     runs-on: ubuntu-latest
     steps:
       - name: nc
